@@ -10,7 +10,7 @@ use crate::types::{McpError, McpResult, ToolCallResult, ToolDefinition};
 pub struct ToolRegistry;
 
 impl ToolRegistry {
-    /// List all available tool definitions (127 tools across 24 inventions).
+    /// List all available tool definitions (127 tools across 24 capabilities).
     pub fn list_tools() -> Vec<ToolDefinition> {
         let mut tools = Vec::with_capacity(130);
 
@@ -37,7 +37,7 @@ impl ToolRegistry {
     ) -> McpResult<ToolCallResult> {
         let args = arguments.unwrap_or(Value::Object(serde_json::Map::new()));
 
-        // Try each invention group in order (fast path: first match returns)
+        // Try each capability group in order (fast path: first match returns)
         if let Some(r) = super::protocol::try_execute(name, args.clone(), session).await { return r; }
         if let Some(r) = super::auth::try_execute(name, args.clone(), session).await { return r; }
         if let Some(r) = super::soul::try_execute(name, args.clone(), session).await { return r; }

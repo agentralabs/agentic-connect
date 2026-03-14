@@ -1,6 +1,6 @@
 # AgenticConnect MCP Tools Reference
 
-## Protocol Tools (Invention 1)
+## Protocol Tools (Capability 1)
 
 | Tool | Description |
 |------|-------------|
@@ -9,7 +9,7 @@
 | `connect_protocol_test` | Test if a protocol endpoint is reachable |
 | `connect_protocol_caps` | Get capabilities of a specific protocol |
 
-## Auth Tools (Invention 2)
+## Auth Tools (Capability 2)
 
 | Tool | Description |
 |------|-------------|
@@ -19,7 +19,7 @@
 | `connect_auth_rotate` | Rotate credentials for a connection |
 | `connect_auth_vault` | Manage the encrypted credential vault |
 
-## Connection Soul Tools (Invention 3)
+## Connection Soul Tools (Capability 3)
 
 | Tool | Description |
 |------|-------------|
@@ -29,7 +29,7 @@
 | `connect_soul_predict` | Predict likely issues based on past patterns |
 | `connect_soul_compare` | Compare two systems for migration planning |
 
-## Retry Tools (Invention 4)
+## Retry Tools (Capability 4)
 
 | Tool | Description |
 |------|-------------|
@@ -39,7 +39,7 @@
 | `connect_retry_circuit` | View or reset circuit breaker state |
 | `connect_retry_simulate` | Simulate failure to test classification |
 
-## Browser Tools (Inventions 5-7)
+## Browser Tools (Capabilities 5-7)
 
 | Tool | Description |
 |------|-------------|
@@ -60,7 +60,7 @@
 | `connect_form_wizard` | Navigate multi-step form flow |
 | `connect_form_validate` | Check form for validation errors |
 
-## API Tools (Inventions 8-9)
+## API Tools (Capabilities 8-9)
 
 | Tool | Description |
 |------|-------------|
@@ -76,7 +76,7 @@
 | `connect_graphql_subscribe` | Manage real-time subscriptions |
 | `connect_graphql_normalize` | Flatten nested response data |
 
-## Infrastructure Tools (Inventions 10-12)
+## Infrastructure Tools (Capabilities 10-12)
 
 | Tool | Description |
 |------|-------------|
@@ -97,7 +97,7 @@
 | `connect_container_scale` | Scale containers up/down |
 | `connect_container_inspect` | Inspect running container |
 
-## Communication Tools (Inventions 13-15)
+## Communication Tools (Capabilities 13-15)
 
 | Tool | Description |
 |------|-------------|
@@ -118,7 +118,7 @@
 | `connect_webhook_route` | Configure routing rules |
 | `connect_webhook_verify` | Verify HMAC-SHA256 signature |
 
-## Data Channel Tools (Inventions 16-18)
+## Data Channel Tools (Capabilities 16-18)
 
 | Tool | Description |
 |------|-------------|
@@ -139,7 +139,7 @@
 | `connect_cloud_cost` | Estimate operation cost |
 | `connect_cloud_resource` | List cloud resources |
 
-## Security Tools (Inventions 19-20)
+## Security Tools (Capabilities 19-20)
 
 | Tool | Description |
 |------|-------------|
@@ -155,7 +155,7 @@
 | `connect_sentinel_alert` | Configure alert thresholds |
 | `connect_sentinel_report` | Availability report |
 
-## Intelligence Tools (Inventions 21-24)
+## Intelligence Tools (Capabilities 21-24)
 
 | Tool | Description |
 |------|-------------|

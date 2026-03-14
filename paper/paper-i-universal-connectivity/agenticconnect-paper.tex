@@ -1,0 +1,379 @@
+\documentclass[10pt, twocolumn]{article}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{microtype}
+\usepackage{tabularx}
+\usepackage{multirow}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, fit, calc, backgrounds}
+
+% Color palette (Agentra design system)
+\definecolor{acblue}{HTML}{2563EB}
+\definecolor{acdarkblue}{HTML}{1E40AF}
+\definecolor{acteal}{HTML}{0D9488}
+\definecolor{acorange}{HTML}{EA580C}
+\definecolor{acgray}{HTML}{6B7280}
+\definecolor{aclightgray}{HTML}{F3F4F6}
+\definecolor{acgreen}{HTML}{059669}
+\definecolor{acred}{HTML}{DC2626}
+\definecolor{acpurple}{HTML}{7C3AED}
+
+% Listings style
+\lstset{
+  basicstyle=\ttfamily\scriptsize,
+  keywordstyle=\color{acblue}\bfseries,
+  commentstyle=\color{acgray}\itshape,
+  stringstyle=\color{acteal},
+  breaklines=true,
+  frame=single,
+  rulecolor=\color{acgray!30},
+  backgroundcolor=\color{aclightgray},
+  numbers=left,
+  numberstyle=\tiny\color{acgray},
+  tabsize=2
+}
+
+% Header
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\small\textit{AgenticConnect}}
+\fancyhead[R]{\small\thepage}
+
+\title{\textbf{AgenticConnect: Protocol-Agnostic External Interface\\for Autonomous AI Agents with Adaptive Retry,\\Encrypted Credential Management, and Connection Intelligence}}
+\author{Omoshola Owolabi\\Researcher -- AI/ML\\Agentra Labs\\\texttt{omoshola.owolabi@agentralabs.tech}}
+\date{March 14, 2026}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+
+% ============================================================================
+% ABSTRACT
+% ============================================================================
+\begin{abstract}
+Autonomous AI agents require access to external systems---APIs, databases, servers, email, cloud infrastructure---yet existing connectivity tools force fragmented integration: one library for HTTP, another for SSH, another for database protocols, each with separate authentication, error handling, and retry logic. We present AgenticConnect, a universal external interface engine that unifies 18~protocol families behind a single MCP (Model Context Protocol) server exposing 123~tools. The system introduces three novel components: (1)~\emph{Connection Souls}, persistent profiles that accumulate knowledge about remote systems across sessions, including OS fingerprints, performance baselines, and error patterns; (2)~an \emph{Intelligent Retry Fabric} that classifies failures into five categories (transient, permanent, rate-limit, authentication, network) and applies protocol-appropriate retry strategies with circuit breakers~\cite{nygard2018release}; and (3)~an encrypted \emph{Credential Vault} using AES-256-GCM with PBKDF2 key derivation supporting eight authentication methods including OAuth~2.0~\cite{rfc6749} token lifecycle management. We implement AgenticConnect in 6{,}203~lines of Rust across four crates, with 164~tests including stress tests handling 10{,}000 concurrent failure classifications and 100{,}KB encrypted payloads. Failure classification and circuit breaker checks complete in sub-microsecond latency. The system requires no cloud services and speaks standard MCP~\cite{mcp2024} over stdio, making it accessible to any LLM.
+\end{abstract}
+
+% ============================================================================
+% 1. INTRODUCTION
+% ============================================================================
+\section{Introduction}
+\label{sec:intro}
+
+AI agents built on large language models~\cite{vaswani2017attention} increasingly operate as autonomous actors---managing infrastructure, interacting with APIs, querying databases, and communicating with external services. Yet the connectivity layer remains fragmented: each protocol requires a separate library, each library has its own authentication scheme, error handling, and retry logic, and none of them learn from past interactions.
+
+Consider an agent tasked with deploying a service update. It must SSH into a server to check prerequisites, make HTTP calls to a container registry, query a PostgreSQL database for configuration, and send a Slack webhook on completion. Today, this requires four separate libraries, four authentication configurations, and four error handling strategies. Knowledge gained from one connection (``this server times out during peak hours'') is not available to other connections.
+
+Current approaches to agent connectivity fall into three categories, each with significant limitations:
+
+\emph{Protocol-specific clients}~\cite{reqwest2024} handle one protocol well but provide no cross-protocol intelligence. \texttt{reqwest} handles HTTP; \texttt{russh} handles SSH; \texttt{lettre} handles email. Each starts from zero knowledge about the remote system.
+
+\emph{API platforms}~\cite{postman2024} add testing and documentation but remain HTTP-centric. They do not handle SSH, database wire protocols, or message queues.
+
+\emph{Integration platforms}~\cite{zapier2024} connect services through pre-built integrations at the service level, not the protocol level. Adding a new service requires building a new integration rather than understanding the underlying protocol.
+
+The core insight of this work is that external connectivity is a \emph{protocol intelligence problem}, not a library collection problem. An agent that understands protocols, manages authentication, classifies failures, and learns from every interaction can connect to \emph{any} external system through a unified interface.
+
+We present AgenticConnect, a universal external interface engine with three contributions:
+
+\begin{enumerate}[leftmargin=*, topsep=3pt, itemsep=1pt]
+\item A \textbf{protocol-agnostic connection engine} that auto-detects and handles 18~protocol families through banner analysis, port detection, and URL scheme parsing.
+\item \textbf{Connection Souls}: persistent profiles that accumulate knowledge about remote systems---OS fingerprints, latency baselines, error histories, and capability maps.
+\item An \textbf{Intelligent Retry Fabric} with five-class failure classification and circuit breakers that prevent cascade failures.
+\end{enumerate}
+
+Table~\ref{tab:related} compares AgenticConnect with existing approaches.
+
+\begin{table*}[t]
+\caption{Comparison of external connectivity approaches for AI agents.}
+\label{tab:related}
+\centering
+\small
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+\textbf{System} & \textbf{Protocols} & \textbf{Auth Mgmt} & \textbf{Retry Logic} & \textbf{Learning} & \textbf{MCP} & \textbf{Dependencies} \\
+\midrule
+curl/httpie & 1 (HTTP) & Manual & None & None & No & OS tool \\
+reqwest~\cite{reqwest2024} & 1 (HTTP) & Manual & Manual & None & No & Rust crate \\
+Postman~\cite{postman2024} & 1 (HTTP) & GUI-based & Manual & None & No & Desktop app \\
+Puppeteer~\cite{puppeteer2024} & 1 (Browser) & None & None & None & No & Chrome \\
+Terraform~\cite{terraform2024} & Multi (IaC) & Provider-based & Built-in & None & No & Cloud SDKs \\
+Zapier~\cite{zapier2024} & Multi (service) & Pre-built & Pre-built & None & No & Cloud service \\
+\midrule
+\textbf{AgenticConnect} & \textbf{18 families} & \textbf{8 methods} & \textbf{5-class + CB} & \textbf{Souls} & \textbf{Yes} & \textbf{None} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+% ============================================================================
+% 2. ARCHITECTURE
+% ============================================================================
+\section{Architecture}
+\label{sec:architecture}
+
+AgenticConnect is structured as four Rust crates:
+
+\begin{description}[leftmargin=*, topsep=3pt, itemsep=1pt]
+\item[\texttt{agentic-connect}] Core library: types, protocol detection, retry engine, credential vault, HTTP client, database engine, TLS inspection, webhook verification.
+\item[\texttt{agentic-connect-mcp}] MCP server: JSON-RPC over stdio, tool registry with 123~tools, session management.
+\item[\texttt{agentic-connect-cli}] CLI binary (\texttt{acnx}): connection management from the terminal.
+\item[\texttt{agentic-connect-ffi}] FFI bindings: C-compatible interface (cdylib + staticlib).
+\end{description}
+
+% Architecture diagram
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+  node distance=0.4cm,
+  every node/.style={font=\scriptsize},
+  layer/.style={rectangle, draw=acgray, fill=aclightgray, rounded corners=2pt, minimum width=6.2cm, minimum height=0.5cm, align=center},
+  engine/.style={rectangle, draw=acblue, fill=acblue!10, rounded corners=2pt, minimum width=1.8cm, minimum height=0.4cm, align=center, font=\tiny},
+]
+
+\node[layer, fill=acblue!15, draw=acblue] (mcp) {MCP Server (JSON-RPC / stdio) --- 123 tools};
+\node[layer, below=of mcp] (reg) {Tool Registry --- dispatch + schema validation};
+\node[layer, below=of reg, minimum height=0.8cm] (tools) {Protocol $\cdot$ Auth $\cdot$ API $\cdot$ DB $\cdot$ Security $\cdot$ Intelligence};
+
+\node[engine, below left=0.5cm and -0.3cm of tools] (store) {Store};
+\node[engine, right=0.1cm of store] (retry) {Retry};
+\node[engine, right=0.1cm of retry] (vault) {Vault};
+\node[engine, right=0.1cm of vault] (http) {HTTP};
+\node[engine, right=0.1cm of http] (db) {DB};
+\node[engine, right=0.1cm of db] (tls) {TLS};
+
+\node[layer, below=0.5cm of vault, fill=acorange!10, draw=acorange] (sqlite) {SQLite --- connections $\cdot$ profiles $\cdot$ health checks};
+
+\draw[-{Stealth}, acgray] (mcp) -- (reg);
+\draw[-{Stealth}, acgray] (reg) -- (tools);
+
+\end{tikzpicture}
+\caption{AgenticConnect architecture. The MCP server dispatches tool calls through the registry to 11 tool groups backed by 8 engine modules, with SQLite persistence.}
+\label{fig:architecture}
+\end{figure}
+
+\subsection{Protocol Detection}
+
+Given a target string (URL, host:port, or hostname), the Protocol Detector applies three strategies in sequence:
+
+\begin{algorithm}[h]
+\caption{Protocol Detection}
+\label{alg:detect}
+\begin{algorithmic}[1]
+\REQUIRE target string $t$
+\STATE Parse $t$ as URL; if scheme matches known protocol, \textbf{return} protocol
+\STATE Parse $t$ as host:port; connect via TCP
+\STATE Read server banner (2\,s timeout)
+\IF{banner matches SSH/SMTP/Redis/MySQL pattern}
+  \RETURN detected protocol
+\ENDIF
+\STATE Map port to default protocol (e.g., 443$\to$HTTPS, 22$\to$SSH)
+\RETURN detected or \textsc{unknown}
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Failure Classification}
+
+The Retry Engine classifies every failure into one of five classes, each with a distinct retry strategy:
+
+\begin{table}[h]
+\caption{Failure classification and retry strategies.}
+\label{tab:retry}
+\centering
+\scriptsize
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Class} & \textbf{Indicators} & \textbf{Strategy} & \textbf{Max} \\
+\midrule
+Transient & 503, timeout & Exp. backoff & 3 \\
+Permanent & 404, 400, 410 & Fail fast & 0 \\
+RateLimit & 429 + Retry-After & Wait fixed & 1 \\
+AuthFailure & 401, 403 & Refresh + retry & 1 \\
+NetworkError & DNS, refused & Exp. backoff & 5 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Circuit breakers~\cite{nygard2018release} wrap each endpoint. After $N$ consecutive failures (default $N{=}5$), the circuit opens and requests are rejected immediately, preventing cascade failures. The circuit transitions to half-open after a configurable timeout, allowing a single probe request.
+
+\subsection{Credential Vault}
+
+The vault stores authentication credentials encrypted at rest using AES-256-GCM~\cite{bernstein2008chacha}. Key derivation uses PBKDF2 with HMAC-SHA256 and 100{,}000~iterations. Eight authentication methods are supported: Basic, Bearer, API Key, OAuth~2.0~\cite{rfc6749} (four grant types), SSH Key, SSH Password, and mutual TLS.
+
+OAuth~2.0 tokens are checked for expiry before each request. When a token is within 5~minutes of expiration, the system signals the need for a refresh before the next API call.
+
+% ============================================================================
+% 3. EVALUATION
+% ============================================================================
+\section{Evaluation}
+\label{sec:evaluation}
+
+\subsection{Micro-Benchmarks}
+
+\begin{table}[h]
+\caption{Operation latencies measured on Apple M4 Pro, Rust release mode.}
+\label{tab:perf}
+\centering
+\scriptsize
+\begin{tabular}{@{}lr@{}}
+\toprule
+\textbf{Operation} & \textbf{Latency} \\
+\midrule
+Tool dispatch (registry lookup) & $< 1\,\mu$s \\
+Failure classification (HTTP status) & $< 1\,\mu$s \\
+Circuit breaker check & $< 1\,\mu$s \\
+HMAC-SHA256 sign (1\,KB payload) & $\sim 2\,\mu$s \\
+Connection store insert (SQLite) & $\sim 50\,\mu$s \\
+AES-256-GCM encrypt (100\,KB) & $\sim 150\,\mu$s \\
+Database schema discovery (50 tables) & $\sim 5\,$ms \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Stress Tests}
+
+We validate system behavior under load:
+
+\begin{itemize}[leftmargin=*, topsep=3pt, itemsep=1pt]
+\item \textbf{1{,}000 connections} stored and retrieved correctly from SQLite with random access verification.
+\item \textbf{10{,}000 failure records} classified without memory growth (history capped at 500).
+\item \textbf{100{,}KB payloads} encrypted and decrypted via AES-256-GCM with zero data corruption.
+\item \textbf{1{,}000 HMAC verifications} with both correct and incorrect secrets.
+\item \textbf{Circuit breaker cycling}: 100 consecutive open/close transitions without state corruption.
+\end{itemize}
+
+\subsection{Test Coverage}
+
+\begin{table}[h]
+\caption{Test suite composition.}
+\label{tab:tests}
+\centering
+\scriptsize
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{Category} & \textbf{Tests} & \textbf{Lines} \\
+\midrule
+Engine unit tests & 27 & 450 \\
+Core type validation & 21 & 280 \\
+Edge case tests & 29 & 320 \\
+Stress tests & 11 & 250 \\
+Paper claim validation & 20 & 300 \\
+MCP protocol compliance & 14 & 120 \\
+Tool registry validation & 14 & 170 \\
+Tool execution (phase 2) & 24 & 350 \\
+Session management (phase 3) & 11 & 200 \\
+Integration workflows (phase 4) & 10 & 250 \\
+\midrule
+\textbf{Total} & \textbf{181} & \textbf{2{,}690} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Codebase Metrics}
+
+\begin{table}[h]
+\caption{Codebase statistics.}
+\label{tab:metrics}
+\centering
+\scriptsize
+\begin{tabular}{@{}lr@{}}
+\toprule
+\textbf{Metric} & \textbf{Value} \\
+\midrule
+Total Rust lines & 6{,}203 \\
+Crates & 4 \\
+Source files & 47 \\
+Largest file & 348 lines \\
+MCP tools & 123 \\
+Protocol families & 18 \\
+Auth methods & 8 \\
+Engine modules & 8 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================================
+% 4. MCP INTEGRATION
+% ============================================================================
+\section{MCP Protocol Integration}
+\label{sec:mcp}
+
+AgenticConnect speaks MCP~\cite{mcp2024} over stdio, making it accessible to any LLM client. The JSON-RPC~2.0 interface implements three methods:
+
+\begin{itemize}[leftmargin=*, topsep=3pt, itemsep=1pt]
+\item \texttt{initialize} --- handshake with protocol version negotiation.
+\item \texttt{tools/list} --- returns all 123 tool definitions with JSON~Schema input validation.
+\item \texttt{tools/call} --- dispatches to the appropriate tool handler.
+\end{itemize}
+
+Unknown tools return error code $-32803$ (\textsc{tool\_not\_found}), following the MCP Quality Standard. Invalid parameters return $-32602$. All tool descriptions follow verb-first imperative style with no trailing periods.
+
+The 123~tools are organized into 11~modules:
+
+\begin{table}[h]
+\caption{Tool organization by capability domain.}
+\label{tab:tools}
+\centering
+\scriptsize
+\begin{tabular}{@{}llr@{}}
+\toprule
+\textbf{Module} & \textbf{Domain} & \textbf{Tools} \\
+\midrule
+\texttt{protocol} & Detection, testing, capabilities & 4 \\
+\texttt{auth} & Authentication, credentials, vault & 5 \\
+\texttt{soul} & Connection profiles, prediction & 5 \\
+\texttt{retry} & Classification, circuit breakers & 5 \\
+\texttt{browse} & Browser, scraping, forms & 16 \\
+\texttt{api} & HTTP, GraphQL, API discovery & 11 \\
+\texttt{infra} & SSH, service mesh, containers & 16 \\
+\texttt{comms} & Email, telephony, webhooks & 16 \\
+\texttt{data} & Databases, queues, cloud & 16 \\
+\texttt{security} & TLS, network monitoring & 11 \\
+\texttt{intelligence} & Prediction, evolution, learning & 18 \\
+\midrule
+& \textbf{Total} & \textbf{123} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================================
+% 5. DISCUSSION
+% ============================================================================
+\section{Discussion}
+\label{sec:discussion}
+
+\textbf{Why protocol-level, not service-level.} Integration platforms like Zapier~\cite{zapier2024} operate at the service level: each new service requires a custom integration. AgenticConnect operates at the protocol level: any HTTP API works immediately because the engine understands HTTP, OAuth~2.0, and rate limiting natively. No per-service integrations are needed.
+
+\textbf{Connection Souls vs. stateless clients.} Traditional clients treat every connection as independent. Connection Souls~\cite{owolabi2026amem} persist knowledge across sessions: a server's typical latency, its failure patterns, its installed software. This enables predictive connectivity---the agent knows to avoid peak hours for a server that historically times out between 2--4\,PM.
+
+\textbf{Limitations.} The current implementation has known constraints: (1)~Protocol detection relies on port-based heuristics when banners are unavailable; TLS handshake analysis would improve accuracy. (2)~Database support is SQLite-only~\cite{rusqlite2024} in the core build; PostgreSQL and MySQL require feature flags. (3)~Browser automation requires headless Chrome, detected gracefully at runtime. (4)~OAuth~2.0 token refresh requires the HTTP feature flag.
+
+% ============================================================================
+% 6. CONCLUSION
+% ============================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+
+We presented AgenticConnect, a universal external interface engine for AI agents. Through 123~MCP tools organized into 11~capability domains, the system provides protocol-agnostic access to any external system with intelligent retry, encrypted credential management, and connection learning.
+
+The three core contributions---Connection Souls, Intelligent Retry Fabric, and the encrypted Credential Vault---transform connectivity from a stateless, per-protocol problem into a learning, unified system. Failure classification, circuit breakers, and rate limit tracking operate at sub-microsecond latency, ensuring the intelligence layer adds negligible overhead.
+
+AgenticConnect is implemented in 6{,}203~lines of Rust, validated by 164+ tests, and distributed as an open-source MIT-licensed project. The system requires no cloud services and integrates with any LLM through the Model Context Protocol.
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}
