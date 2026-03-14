@@ -1,0 +1,51 @@
+# Rust
+/target/
+**/*.rs.bk
+*.pdb
+Cargo.lock.bk
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS
+Thumbs.db
+.Spotlight-V100
+.Trashes
+
+# Python (for any scripts/tools)
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# LaTeX
+paper/**/*.aux
+paper/**/*.log
+paper/**/*.out
+paper/**/*.synctex.gz
+paper/**/*.fls
+paper/**/*.fdb_latexmk
+paper/**/*.bbl
+paper/**/*.blg
+paper/**/*.toc
+
+# Data files (never commit user data)
+*.db
+*.sqlite
+*.acnx
+connections.db
+
+# Secrets (never commit)
+.env
+.env.*
+*.pem
+*.key
+*.cert
+credentials.json
+secrets.toml

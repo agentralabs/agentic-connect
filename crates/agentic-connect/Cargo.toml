@@ -1,0 +1,45 @@
+[package]
+name = "agentic-connect"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "Universal external interface engine for AI agents"
+
+[lib]
+name = "agentic_connect"
+path = "src/lib.rs"
+
+[features]
+default = ["http", "format"]
+http = ["dep:reqwest"]
+format = ["dep:lz4_flex", "dep:memmap2", "dep:blake3"]
+browser = []
+ssh = []
+email = []
+telephony = []
+full = ["http", "format", "browser", "ssh", "email", "telephony"]
+
+[dependencies]
+agentic-sdk = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+chrono = { workspace = true }
+thiserror = { workspace = true }
+uuid = { workspace = true }
+url = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+rusqlite = { workspace = true }
+
+# Optional
+reqwest = { workspace = true, optional = true }
+lz4_flex = { version = "0.11", optional = true }
+memmap2 = { version = "0.9", optional = true }
+blake3 = { version = "1", optional = true }
+ring = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+tokio-test = "0.4"

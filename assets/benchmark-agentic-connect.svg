@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 420" role="img" aria-label="AgenticConnect benchmark chart in Agentra design system">
+  <defs>
+    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#c9c6bb"/>
+    </pattern>
+    <style><![CDATA[
+      .mono { font-family:'IBM Plex Mono','JetBrains Mono',monospace; }
+      .ink { fill:#121212; }
+      .muted { fill:#6d6a63; }
+      .accent { fill:#ea580c; }
+      .frame { fill:#fffdf6; stroke:#1f1f1f; stroke-width:2; }
+      .bar-fast { fill:#121212; }
+      .bar-mid { fill:#4f4a43; }
+      .bar-slow { fill:#ea580c; }
+    ]]></style>
+  </defs>
+
+  <rect width="820" height="420" fill="#f2f1ea"/>
+  <rect width="820" height="420" fill="url(#grid)"/>
+  <line x1="18" y1="28" x2="802" y2="28" stroke="#1f1f1f"/>
+  <text x="18" y="21" class="mono muted" font-size="11" letter-spacing="2">// BENCHMARK: ENGINE OPERATION LATENCY</text>
+
+  <rect x="22" y="44" width="776" height="354" class="frame"/>
+  <line x1="110" y1="86" x2="110" y2="340" stroke="#1f1f1f"/>
+  <line x1="110" y1="340" x2="760" y2="340" stroke="#1f1f1f"/>
+
+  <!-- Y-axis labels -->
+  <text x="72" y="96" class="mono muted" font-size="10" text-anchor="end">10ms</text>
+  <text x="72" y="156" class="mono muted" font-size="10" text-anchor="end">1ms</text>
+  <text x="72" y="216" class="mono muted" font-size="10" text-anchor="end">100μs</text>
+  <text x="72" y="276" class="mono muted" font-size="10" text-anchor="end">10μs</text>
+  <text x="72" y="336" class="mono muted" font-size="10" text-anchor="end">0</text>
+
+  <!-- Gridlines -->
+  <line x1="110" y1="96" x2="760" y2="96" stroke="#e5e2da" stroke-width="0.5"/>
+  <line x1="110" y1="156" x2="760" y2="156" stroke="#e5e2da" stroke-width="0.5"/>
+  <line x1="110" y1="216" x2="760" y2="216" stroke="#e5e2da" stroke-width="0.5"/>
+  <line x1="110" y1="276" x2="760" y2="276" stroke="#e5e2da" stroke-width="0.5"/>
+
+  <!-- Bars: sub-microsecond operations (barely visible) -->
+  <rect x="132" y="333" width="60" height="7" class="bar-fast"/>
+  <rect x="212" y="333" width="60" height="7" class="bar-fast"/>
+  <rect x="292" y="331" width="60" height="9" class="bar-fast"/>
+
+  <!-- Bars: microsecond operations -->
+  <rect x="372" y="303" width="60" height="37" class="bar-mid"/>
+  <rect x="452" y="256" width="60" height="84" class="bar-mid"/>
+
+  <!-- Bars: millisecond operations -->
+  <rect x="532" y="192" width="60" height="148" class="bar-slow"/>
+  <rect x="612" y="102" width="60" height="238" class="bar-slow"/>
+
+  <!-- X-axis labels -->
+  <text x="162" y="360" class="mono ink" font-size="9" text-anchor="middle" letter-spacing="1">DISPATCH</text>
+  <text x="242" y="360" class="mono ink" font-size="9" text-anchor="middle" letter-spacing="1">CLASSIFY</text>
+  <text x="322" y="360" class="mono ink" font-size="9" text-anchor="middle" letter-spacing="1">HMAC</text>
+  <text x="402" y="360" class="mono ink" font-size="9" text-anchor="middle" letter-spacing="1">INSERT</text>
+  <text x="482" y="360" class="mono ink" font-size="9" text-anchor="middle" letter-spacing="1">ENCRYPT</text>
+  <text x="562" y="360" class="mono ink" font-size="9" text-anchor="middle" letter-spacing="1">QUERY</text>
+  <text x="642" y="360" class="mono ink" font-size="9" text-anchor="middle" letter-spacing="1">SCHEMA</text>
+
+  <text x="44" y="377" class="mono muted" font-size="11" letter-spacing="1.5">FAST PATH: SUB-MICROSECOND DISPATCH | HEAVY PATH: SCHEMA DISCOVERY</text>
+  <line x1="44" y1="384" x2="776" y2="384" stroke="#1f1f1f"/>
+  <text x="44" y="398" class="mono ink" font-size="12" letter-spacing="1.2">116 TESTS PASSING | 8 ENGINES | 123 MCP TOOLS | RUST RELEASE MODE</text>
+  <circle cx="776" cy="394" r="4" class="accent"/>
+</svg>

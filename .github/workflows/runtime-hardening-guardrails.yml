@@ -1,0 +1,18 @@
+name: Runtime Hardening Guardrails
+
+on:
+  push:
+    paths: ['crates/**/*.rs', 'Cargo.toml']
+  pull_request:
+    paths: ['crates/**/*.rs', 'Cargo.toml']
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Clone agentic-sdk (sibling dependency)
+        run: git clone --depth 1 https://github.com/agentralabs/agentic-sdk.git ../agentic-sdk
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Runtime hardening checks
+        run: bash scripts/check-runtime-hardening.sh

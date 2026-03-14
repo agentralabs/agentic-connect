@@ -1,0 +1,34 @@
+[package]
+name = "agentic-connect-mcp"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "MCP server for AgenticConnect — universal external interface"
+
+[dependencies]
+agentic-connect = { workspace = true, features = ["http"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true }
+clap = { version = "4.4", features = ["derive"] }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+url = { workspace = true }
+dirs = "5.0"
+
+[dev-dependencies]
+tempfile = { workspace = true }
+
+[[bin]]
+name = "agentic-connect-mcp"
+path = "src/main.rs"
+
+[lib]
+name = "agentic_connect_mcp"
+path = "src/lib.rs"

@@ -1,0 +1,62 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/agentic-connect",
+    "crates/agentic-connect-mcp",
+    "crates/agentic-connect-cli",
+    "crates/agentic-connect-ffi",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/agentralabs/agentic-connect"
+authors = ["Agentra Labs <contact@agentralabs.tech>"]
+
+[workspace.dependencies]
+# Core
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.35", features = ["full"] }
+chrono = { version = "0.4", features = ["serde"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+thiserror = "1.0"
+anyhow = "1.0"
+uuid = { version = "1.6", features = ["v4", "serde"] }
+url = "2"
+tempfile = "3"
+
+# File format
+lz4_flex = "0.11"
+blake3 = "1"
+memmap2 = "0.9"
+
+# HTTP/API
+reqwest = { version = "0.12", features = ["json", "multipart", "cookies", "rustls-tls"] }
+
+# Crypto (credential vault)
+ring = "0.17"
+
+# Database
+rusqlite = { version = "0.31", features = ["bundled"] }
+
+# Sibling SDK
+agentic-sdk = { version = "0.2.0", path = "../agentic-sdk" }
+
+# Internal crates
+agentic-connect = { path = "crates/agentic-connect" }
+agentic-connect-mcp = { path = "crates/agentic-connect-mcp" }
+
+[profile.dev]
+codegen-units = 16
+debug = 1
+split-debuginfo = "unpacked"
+incremental = true
+
+[profile.test]
+codegen-units = 16
+debug = 1
+split-debuginfo = "unpacked"
+incremental = true
