@@ -47,8 +47,8 @@ rusqlite = { version = "0.31", features = ["bundled"] }
 agentic-sdk = { version = "0.2.0", path = "../agentic-sdk" }
 
 # Internal crates
-agentic-connect = { path = "crates/agentic-connect" }
-agentic-connect-mcp = { path = "crates/agentic-connect-mcp" }
+agentic-connect = { version = "0.1.0", path = "crates/agentic-connect" }
+agentic-connect-mcp = { version = "0.1.0", path = "crates/agentic-connect-mcp" }
 
 [profile.dev]
 codegen-units = 16
