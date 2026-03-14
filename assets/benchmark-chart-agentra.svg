@@ -1,66 +1,57 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 420" role="img" aria-label="AgenticConnect benchmark chart in Agentra design system">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 420" role="img" aria-label="AgenticConnect benchmark chart">
   <defs>
     <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-      <circle cx="2" cy="2" r="1" fill="#c9c6bb"/>
+      <circle cx="2" cy="2" r="1" fill="#b8b6ae"/>
     </pattern>
-    <style><![CDATA[
-      .mono { font-family:'IBM Plex Mono','JetBrains Mono',monospace; }
-      .ink { fill:#121212; }
-      .muted { fill:#6d6a63; }
-      .accent { fill:#ea580c; }
-      .frame { fill:#fffdf6; stroke:#1f1f1f; stroke-width:2; }
-      .bar-fast { fill:#121212; }
-      .bar-mid { fill:#4f4a43; }
-      .bar-slow { fill:#ea580c; }
-    ]]></style>
   </defs>
-
   <rect width="820" height="420" fill="#f2f1ea"/>
   <rect width="820" height="420" fill="url(#grid)"/>
-  <line x1="18" y1="28" x2="802" y2="28" stroke="#1f1f1f"/>
-  <text x="18" y="21" class="mono muted" font-size="11" letter-spacing="2">// BENCHMARK: ENGINE OPERATION LATENCY</text>
+  <rect x="16" y="16" width="788" height="388" fill="none" stroke="#111111" stroke-width="2"/>
+  <line x1="16" y1="48" x2="804" y2="48" stroke="#111111" stroke-width="2"/>
+  <text x="32" y="38" font-family="'JetBrains Mono', monospace" font-size="12" fill="#5f5c53" letter-spacing="2">// BENCHMARK: ENGINE_LATENCY_PROFILE</text>
+  <rect x="764" y="30" width="8" height="8" fill="#ea580c"/>
+  <text x="780" y="40" font-family="'JetBrains Mono', monospace" font-size="10" fill="#5f5c53">003</text>
 
-  <rect x="22" y="44" width="776" height="354" class="frame"/>
-  <line x1="110" y1="86" x2="110" y2="340" stroke="#1f1f1f"/>
-  <line x1="110" y1="340" x2="760" y2="340" stroke="#1f1f1f"/>
+  <!-- Chart area -->
+  <rect x="32" y="68" width="756" height="296" fill="none" stroke="#111111" stroke-width="1.5"/>
 
-  <!-- Y-axis labels -->
-  <text x="72" y="96" class="mono muted" font-size="10" text-anchor="end">10ms</text>
-  <text x="72" y="156" class="mono muted" font-size="10" text-anchor="end">1ms</text>
-  <text x="72" y="216" class="mono muted" font-size="10" text-anchor="end">100μs</text>
-  <text x="72" y="276" class="mono muted" font-size="10" text-anchor="end">10μs</text>
-  <text x="72" y="336" class="mono muted" font-size="10" text-anchor="end">0</text>
+  <!-- Y-axis -->
+  <line x1="100" y1="86" x2="100" y2="340" stroke="#111111"/>
+  <line x1="100" y1="340" x2="760" y2="340" stroke="#111111"/>
 
-  <!-- Gridlines -->
-  <line x1="110" y1="96" x2="760" y2="96" stroke="#e5e2da" stroke-width="0.5"/>
-  <line x1="110" y1="156" x2="760" y2="156" stroke="#e5e2da" stroke-width="0.5"/>
-  <line x1="110" y1="216" x2="760" y2="216" stroke="#e5e2da" stroke-width="0.5"/>
-  <line x1="110" y1="276" x2="760" y2="276" stroke="#e5e2da" stroke-width="0.5"/>
+  <text x="68" y="100" font-family="'JetBrains Mono', monospace" font-size="10" fill="#5f5c53" text-anchor="end">10ms</text>
+  <text x="68" y="160" font-family="'JetBrains Mono', monospace" font-size="10" fill="#5f5c53" text-anchor="end">1ms</text>
+  <text x="68" y="220" font-family="'JetBrains Mono', monospace" font-size="10" fill="#5f5c53" text-anchor="end">100μs</text>
+  <text x="68" y="280" font-family="'JetBrains Mono', monospace" font-size="10" fill="#5f5c53" text-anchor="end">10μs</text>
+  <text x="68" y="336" font-family="'JetBrains Mono', monospace" font-size="10" fill="#5f5c53" text-anchor="end">0</text>
 
-  <!-- Bars: sub-microsecond operations (barely visible) -->
-  <rect x="132" y="333" width="60" height="7" class="bar-fast"/>
-  <rect x="212" y="333" width="60" height="7" class="bar-fast"/>
-  <rect x="292" y="331" width="60" height="9" class="bar-fast"/>
+  <!-- Grid lines -->
+  <line x1="100" y1="100" x2="760" y2="100" stroke="#d5d3cc" stroke-width="0.5"/>
+  <line x1="100" y1="160" x2="760" y2="160" stroke="#d5d3cc" stroke-width="0.5"/>
+  <line x1="100" y1="220" x2="760" y2="220" stroke="#d5d3cc" stroke-width="0.5"/>
+  <line x1="100" y1="280" x2="760" y2="280" stroke="#d5d3cc" stroke-width="0.5"/>
 
-  <!-- Bars: microsecond operations -->
-  <rect x="372" y="303" width="60" height="37" class="bar-mid"/>
-  <rect x="452" y="256" width="60" height="84" class="bar-mid"/>
-
-  <!-- Bars: millisecond operations -->
-  <rect x="532" y="192" width="60" height="148" class="bar-slow"/>
-  <rect x="612" y="102" width="60" height="238" class="bar-slow"/>
+  <!-- Bars -->
+  <rect x="128" y="333" width="68" height="7" fill="#111111"/>
+  <rect x="218" y="333" width="68" height="7" fill="#111111"/>
+  <rect x="308" y="330" width="68" height="10" fill="#111111"/>
+  <rect x="398" y="305" width="68" height="35" fill="#5f5c53"/>
+  <rect x="488" y="260" width="68" height="80" fill="#5f5c53"/>
+  <rect x="578" y="200" width="68" height="140" fill="#ea580c"/>
+  <rect x="668" y="108" width="68" height="232" fill="#ea580c"/>
 
   <!-- X-axis labels -->
-  <text x="162" y="360" class="mono ink" font-size="9" text-anchor="middle" letter-spacing="1">DISPATCH</text>
-  <text x="242" y="360" class="mono ink" font-size="9" text-anchor="middle" letter-spacing="1">CLASSIFY</text>
-  <text x="322" y="360" class="mono ink" font-size="9" text-anchor="middle" letter-spacing="1">HMAC</text>
-  <text x="402" y="360" class="mono ink" font-size="9" text-anchor="middle" letter-spacing="1">INSERT</text>
-  <text x="482" y="360" class="mono ink" font-size="9" text-anchor="middle" letter-spacing="1">ENCRYPT</text>
-  <text x="562" y="360" class="mono ink" font-size="9" text-anchor="middle" letter-spacing="1">QUERY</text>
-  <text x="642" y="360" class="mono ink" font-size="9" text-anchor="middle" letter-spacing="1">SCHEMA</text>
+  <text x="162" y="358" font-family="'JetBrains Mono', monospace" font-size="9" fill="#111111" text-anchor="middle" letter-spacing="1">DISPATCH</text>
+  <text x="252" y="358" font-family="'JetBrains Mono', monospace" font-size="9" fill="#111111" text-anchor="middle" letter-spacing="1">CLASSIFY</text>
+  <text x="342" y="358" font-family="'JetBrains Mono', monospace" font-size="9" fill="#111111" text-anchor="middle" letter-spacing="1">HMAC</text>
+  <text x="432" y="358" font-family="'JetBrains Mono', monospace" font-size="9" fill="#111111" text-anchor="middle" letter-spacing="1">INSERT</text>
+  <text x="522" y="358" font-family="'JetBrains Mono', monospace" font-size="9" fill="#111111" text-anchor="middle" letter-spacing="1">ENCRYPT</text>
+  <text x="612" y="358" font-family="'JetBrains Mono', monospace" font-size="9" fill="#111111" text-anchor="middle" letter-spacing="1">QUERY</text>
+  <text x="702" y="358" font-family="'JetBrains Mono', monospace" font-size="9" fill="#111111" text-anchor="middle" letter-spacing="1">SCHEMA</text>
 
-  <text x="44" y="377" class="mono muted" font-size="11" letter-spacing="1.5">FAST PATH: SUB-MICROSECOND DISPATCH | HEAVY PATH: SCHEMA DISCOVERY</text>
-  <line x1="44" y1="384" x2="776" y2="384" stroke="#1f1f1f"/>
-  <text x="44" y="398" class="mono ink" font-size="12" letter-spacing="1.2">116 TESTS PASSING | 8 ENGINES | 123 MCP TOOLS | RUST RELEASE MODE</text>
-  <circle cx="776" cy="394" r="4" class="accent"/>
+  <!-- Legend -->
+  <text x="32" y="384" font-family="'JetBrains Mono', monospace" font-size="11" fill="#5f5c53" letter-spacing="1.5">FAST PATH: SUB-MICROSECOND DISPATCH | HEAVY PATH: SCHEMA DISCOVERY</text>
+  <line x1="32" y1="392" x2="788" y2="392" stroke="#111111"/>
+  <text x="32" y="406" font-family="'JetBrains Mono', monospace" font-size="11" fill="#111111" letter-spacing="1">164 TESTS | 8 ENGINES | 123 MCP TOOLS | APPLE M4 PRO RELEASE MODE</text>
+  <rect x="776" y="398" width="8" height="8" fill="#ea580c"/>
 </svg>
