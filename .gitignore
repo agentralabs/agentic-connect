@@ -49,3 +49,6 @@ connections.db
 *.cert
 credentials.json
 secrets.toml
+
+# Internal planning (not published)
+planning-docs/
