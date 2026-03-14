@@ -4,8 +4,12 @@ version.workspace = true
 edition.workspace = true
 license.workspace = true
 repository.workspace = true
+homepage.workspace = true
 authors.workspace = true
-description = "Universal external interface engine for AI agents"
+description = "Universal external interface engine for AI agents — 18 protocols, Connection Souls, circuit breakers, encrypted vault"
+readme = "../../README.md"
+keywords = ["ai", "agent", "connectivity", "mcp", "protocol"]
+categories = ["network-programming", "web-programming"]
 
 [lib]
 name = "agentic_connect"

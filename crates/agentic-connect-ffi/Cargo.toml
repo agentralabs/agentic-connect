@@ -3,6 +3,12 @@ name = "agentic-connect-ffi"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+description = "FFI bindings for AgenticConnect — C-compatible interface"
+keywords = ["ffi", "connectivity", "ai", "agent", "bindings"]
+categories = ["api-bindings"]
 
 [lib]
 name = "agentic_connect_ffi"

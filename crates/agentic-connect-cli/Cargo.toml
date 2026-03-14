@@ -3,6 +3,12 @@ name = "agentic-connect-cli"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+description = "CLI tool for AgenticConnect — connection management from the terminal"
+keywords = ["ai", "agent", "connectivity", "cli", "protocol"]
+categories = ["command-line-utilities"]
 
 [dependencies]
 agentic-connect = { workspace = true }

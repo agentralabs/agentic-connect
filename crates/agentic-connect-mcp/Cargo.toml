@@ -4,8 +4,11 @@ version.workspace = true
 edition.workspace = true
 license.workspace = true
 repository.workspace = true
+homepage.workspace = true
 authors.workspace = true
-description = "MCP server for AgenticConnect — universal external interface"
+description = "MCP server for AgenticConnect — 123 tools for protocol-agnostic external connectivity"
+keywords = ["mcp", "llm", "connectivity", "agent", "ai"]
+categories = ["development-tools", "network-programming"]
 
 [dependencies]
 agentic-connect = { workspace = true, features = ["http"] }
