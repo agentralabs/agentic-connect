@@ -1,54 +1,88 @@
 # Rust
-/target/
-**/*.rs.bk
-*.pdb
-Cargo.lock.bk
-
-# IDE
-.idea/
-.vscode/
+target/
 *.swp
 *.swo
-*~
-.DS_Store
 
-# OS
-Thumbs.db
-.Spotlight-V100
-.Trashes
-
-# Python (for any scripts/tools)
+# Python
 __pycache__/
 *.py[cod]
+*$py.class
 *.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+*.whl
 .venv/
 venv/
+env/
 
-# LaTeX
-paper/**/*.aux
-paper/**/*.log
-paper/**/*.out
-paper/**/*.synctex.gz
-paper/**/*.fls
-paper/**/*.fdb_latexmk
-paper/**/*.bbl
-paper/**/*.blg
-paper/**/*.toc
+# IDE
+.vscode/
+.idea/
+*.iml
+.fleet/
 
-# Data files (never commit user data)
-*.db
-*.sqlite
-*.acnx
-connections.db
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*~
 
-# Secrets (never commit)
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.tox/
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# Planning docs / AI prompts (internal only)
+planning-docs/
+CLAUDE-CODE-INSTRUCTIONS*.md
+SPEC-*.md
+
+# Internal vision / roadmap documents
+docs/VISION-*.md
+
+# Claude Code
+.claude/
+.agentra/
+
+# Root-level paper files (canonical copies are in paper/)
+/agenticconnect-paper.*
+/references.bib
+
+# FFI (build artifacts)
+/ffi/
+
+# Internal docs (not for public repo)
+docs/internal/
+
+# Local goals (internal only)
+goals/
+
+# Environment / secrets
 .env
-.env.*
+.env.local
 *.pem
 *.key
 *.cert
 credentials.json
 secrets.toml
 
-# Internal planning (not published)
-planning-docs/
+# Data files (never commit user data)
+*.db
+*.sqlite
+*.acnx
+connections.db
