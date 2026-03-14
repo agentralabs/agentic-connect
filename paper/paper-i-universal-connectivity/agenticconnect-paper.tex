@@ -467,11 +467,7 @@ The 123~tools are organized into 11~modules by capability domain:
 \end{tabular}
 \end{table}
 
-\subsection{Error Handling}
-
-Tool errors follow the MCP Quality Standard. Unknown tools return JSON-RPC error code $-32803$ (\textsc{tool\_not\_found}), distinct from the generic $-32601$ (\textsc{method\_not\_found}). Invalid parameters return $-32602$. Tool execution errors set \texttt{isError: true} in the response content, not as JSON-RPC errors. All tool descriptions follow verb-first imperative style with no trailing periods, enforced by automated guardrails.
-
-\subsection{Webhook Verification}
+Tool errors follow the MCP Quality Standard: unknown tools return JSON-RPC error code $-32803$ (\textsc{tool\_not\_found}), distinct from the generic $-32601$ (\textsc{method\_not\_found}). Invalid parameters return $-32602$. Tool execution errors set \texttt{isError: true} in the response content, not as JSON-RPC errors. All tool descriptions follow verb-first imperative style with no trailing periods, enforced by automated guardrails.
 
 The WebhookEngine provides HMAC-SHA256~\cite{rfc2104} signature generation and verification. For a payload $p$ and secret $s$, the signature is computed as $\text{HMAC-SHA256}(s, p)$ and transmitted as a hex-encoded string with optional \texttt{sha256=} prefix. Verification uses constant-time comparison via the \texttt{ring}~\cite{ring2024} cryptography library to prevent timing attacks.
 
@@ -481,9 +477,7 @@ The WebhookEngine provides HMAC-SHA256~\cite{rfc2104} signature generation and v
 \section{Evaluation}
 \label{sec:evaluation}
 
-\subsection{Micro-Benchmarks}
-
-All benchmarks measured on Apple M4 Pro, Rust release mode (\texttt{-O3} via \texttt{opt-level = 3}).
+\textbf{Micro-benchmarks.} All benchmarks measured on Apple M4 Pro, Rust release mode (\texttt{-O3} via \texttt{opt-level = 3}).
 
 \begin{table}[h]
 \caption{Operation latencies.}
@@ -508,7 +502,7 @@ Database schema discovery (50 tables) & $\sim 5\,$ms \\
 
 Sub-microsecond latencies for classification and circuit breaker checks are validated by paper-claim tests that execute 10{,}000 iterations and verify per-operation time remains below 1{,}$\mu$s.
 
-\subsection{Stress Tests}
+\textbf{Stress tests.} We validate system behavior under sustained load. Table~\ref{tab:stress} summarizes results.
 
 \begin{table}[h]
 \caption{Stress test results validating system behavior under load.}
@@ -530,7 +524,7 @@ Sub-microsecond latencies for classification and circuit breaker checks are vali
 \end{tabular}
 \end{table}
 
-\subsection{Test Coverage}
+\textbf{Test coverage.} Table~\ref{tab:tests} breaks down the 181-test suite across ten categories. All tests pass with zero failures.
 
 \begin{table}[h]
 \caption{Test suite composition (all passing, 0 failures).}
@@ -557,7 +551,7 @@ Integration workflows (phase 4) & 10 & 250 \\
 \end{tabular}
 \end{table}
 
-\subsection{Codebase Metrics}
+\textbf{Codebase metrics.} Table~\ref{tab:metrics} summarizes the implementation.
 
 \begin{table}[h]
 \caption{Codebase statistics.}
@@ -631,7 +625,7 @@ CI workflows & 5 \\
 % 5.6 PERSISTENCE LAYER
 % ============================================================================
 
-\subsection{Persistence Layer}
+\textbf{Persistence layer.}
 
 All state persists in a single SQLite~\cite{sqlite2024} database with four tables:
 
@@ -665,7 +659,7 @@ CREATE TABLE health_checks (
 
 The \texttt{connections} table stores 10 fields per connection at approximately 200--500 bytes per row depending on metadata size. The \texttt{profiles} table stores JSON-serialized Connection Souls with unbounded growth per connection but bounded error histories (100 entries, Section~\ref{sec:souls}). Health check history is indexed by connection ID and timestamp for efficient range queries.
 
-\subsection{Capacity Analysis}
+\textbf{Capacity analysis.}
 
 Table~\ref{tab:capacity} projects real-world storage requirements. Even in enterprise scenarios with thousands of connections, the SQLite database remains practical within a 100\,MB budget for years of operation.
 
@@ -693,7 +687,7 @@ Multi-agent fleet & 5{,}000 & 20{,}000 & 730 & 0.14 \\
 % 5.7 COMPARISON RADAR
 % ============================================================================
 
-\subsection{Comparison with Existing Approaches}
+\textbf{Comparison with existing approaches.}
 
 Figure~\ref{fig:radar} visualizes the multi-dimensional comparison from Table~\ref{tab:related} as a radar chart across six dimensions. AgenticConnect is the only system that provides complete coverage across protocol breadth, authentication management, failure learning, and MCP access simultaneously.
 
@@ -743,21 +737,13 @@ Figure~\ref{fig:radar} visualizes the multi-dimensional comparison from Table~\r
 
 Beyond the micro-benchmarks of Section~\ref{sec:evaluation}, we conducted four phases of end-to-end validation testing the complete MCP pipeline, from JSON-RPC request through tool dispatch and engine execution to response serialization.
 
-\subsection{Phase 1: Type Foundation}
+The validation is organized into four phases. \textbf{Phase~1 (Type Foundation):} 14~tests validate the MCP type system, covering JSON-RPC request parsing (valid, invalid, null ID, missing params), response serialization (success and error paths), tool definition schema compliance, and error code constants. The \texttt{TOOL\_NOT\_FOUND} error code ($-32803$) is verified to be distinct from \texttt{METHOD\_NOT\_FOUND} ($-32601$) per the MCP Quality Standard.
 
-14~tests validate the MCP type system: JSON-RPC request parsing (valid, invalid, null ID, missing params), response serialization (success and error paths), tool definition schema compliance, and error code constants. The \texttt{TOOL\_NOT\_FOUND} error code ($-32803$) is verified to be distinct from \texttt{METHOD\_NOT\_FOUND} ($-32601$) per the MCP Quality Standard.
+\textbf{Phase~2 (Tool Execution):} 24~tests exercise every tool group with a real in-memory \texttt{SessionManager}. Protocol detection tests verify URL parsing (\texttt{https://} $\to$ HTTPS, \texttt{ssh://} $\to$ SSH) and port-based detection. Retry tests verify failure classification (HTTP 429 $\to$ RateLimit, 404 $\to$ Permanent). Webhook tests verify HMAC-SHA256 signature generation and verification with both correct and incorrect secrets. Database tests verify SQLite connection, schema discovery, and query execution through the MCP interface.
 
-\subsection{Phase 2: Tool Execution}
+\textbf{Phase~3 (Session Lifecycle):} 11~tests validate session management: in-memory creation, connection CRUD, retry engine state persistence across operations, credential vault store/retrieve/delete, database connection lifecycle, multi-connection isolation, and profile roundtrip (store soul $\to$ retrieve $\to$ verify latency samples).
 
-24~tests exercise every tool group with a real in-memory \texttt{SessionManager}. Protocol detection tests verify URL parsing (\texttt{https://} $\to$ HTTPS, \texttt{ssh://} $\to$ SSH) and port-based detection. Retry tests verify failure classification (HTTP 429 $\to$ RateLimit, 404 $\to$ Permanent). Webhook tests verify HMAC-SHA256 signature generation and verification with both correct and incorrect secrets. Database tests verify SQLite connection, schema discovery, and query execution through the MCP interface.
-
-\subsection{Phase 3: Session Lifecycle}
-
-11~tests validate session management: in-memory creation, connection CRUD, retry engine state persistence across operations, credential vault store/retrieve/delete, database connection lifecycle, multi-connection isolation, and profile roundtrip (store soul $\to$ retrieve $\to$ verify latency samples).
-
-\subsection{Phase 4: Integration Workflows}
-
-10~tests validate multi-tool sequences that exercise the full engine stack:
+\textbf{Phase~4 (Integration Workflows):} 10~tests validate multi-tool sequences that exercise the full engine stack:
 
 \begin{enumerate}[nosep, leftmargin=*]
 \item \textbf{Detect $\to$ Connect $\to$ Query}: protocol detection, database connection, health check.
@@ -769,7 +755,7 @@ Beyond the micro-benchmarks of Section~\ref{sec:evaluation}, we conducted four p
 \item \textbf{All 11 groups dispatch}: one tool from each group, verifying no panics.
 \end{enumerate}
 
-\subsection{Protocol Detection Accuracy}
+\textbf{Protocol detection accuracy.}
 
 Table~\ref{tab:detect} reports protocol detection accuracy across the three strategies. URL scheme parsing is deterministic (100\% for known schemes). Port-based detection covers 12 well-known ports. Banner-based detection was validated against 5 known server greeting patterns.
 
@@ -792,7 +778,7 @@ Combined (3-tier) & Any target & 98\%+ & 18 protocols \\
 
 The combined three-tier strategy achieves $>$98\% accuracy on known protocols. The remaining 2\% consists of non-standard port assignments where banner analysis is the only viable strategy, and the banner format is atypical (e.g., custom Redis forks that modify the greeting).
 
-\subsection{Paper Claim Validation}
+\textbf{Paper claim validation.}
 
 20~dedicated tests verify every quantitative claim in this paper:
 
