@@ -234,9 +234,10 @@ async fn test_browse_tools_return_stub() {
 // === Infra tools (stubs) ===
 
 #[tokio::test]
-async fn test_infra_tools_return_stub() {
+async fn test_infra_tools_respond() {
     let s = session();
-    for tool in ["connect_remote_exec", "connect_mesh_discover", "connect_container_status"] {
+    // mesh_health and container_status work without connection_id
+    for tool in ["connect_mesh_health", "connect_mesh_cascade", "connect_container_status"] {
         let r = ToolRegistry::call(tool, Some(json!({})), &s).await.unwrap();
         assert!(!r.is_error);
     }
